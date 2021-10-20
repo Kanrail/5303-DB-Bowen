@@ -7,6 +7,6 @@
 |   #   | File            | Description                                          |
 | :---: | --------------- | --------------------------------------------------   |
 |   1   | main.py         | Fastapi py file that holds the movie database routes |
-|   2   | mysqlCnx.py     | Fastapi py file that holds the movie database routes |
+|   2   | mysqlCnx.py     | Handles the SQL database connection                  |
 
 
