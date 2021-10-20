@@ -372,14 +372,24 @@ def getPeople(item:Person):
         offset = item.limit.offset if item.limit.offset != None else 0
     except:
         offset = 0
-
-    sql = f"""
-    SELECT id, firstname, lastname, birthyear, deathyear,
-            GROUP_CONCAT(DISTINCT a.profession SEPARATOR ', ') as 'professions'
-    FROM `person`
-        LEFT OUTER JOIN personprofessions AS a ON id = a.personId
-        LEFT OUTER JOIN role AS r ON id = r.actorId
-        LEFT OUTER JOIN directors AS d ON id = d.directorId
+    sql = ""
+    rolesql = f"""
+    SELECT p.id, firstname, lastname, birthyear, deathyear, 
+        GROUP_CONCAT(DISTINCT a.profession SEPARATOR ', ') as 'professions' 
+    FROM `person` AS p 
+        INNER JOIN role AS r ON p.id = r.actorId 
+        LEFT OUTER JOIN personprofessions AS a ON id = a.personId 
+        JOIN movies AS m ON r.movieId = m.id 
+        JOIN moviegenres AS g ON m.id = g.movieId 
+    """
+    dirsql = """
+    SELECT p.id, firstname, lastname, birthyear, deathyear, 
+        GROUP_CONCAT(DISTINCT a.profession SEPARATOR ', ') as 'professions' 
+    FROM `person` AS p 
+        INNER JOIN directors AS d ON p.id = d.directorId 
+        LEFT OUTER JOIN personprofessions AS a ON id = a.personId 
+        JOIN movies AS m ON d.movieId = m.id 
+        JOIN moviegenres AS g ON m.id = g.movieId 
     """
     orderby = item.orderby
     orderbysql = ""
@@ -392,6 +402,7 @@ def getPeople(item:Person):
     limit = f" LIMIT {rowcount} OFFSET {offset} "
 
     whereQuery = "WHERE "
+    dupWhereQuery = ""
     numWhereQueries = 0
     numAnds = 0
 
@@ -507,34 +518,6 @@ def getPeople(item:Person):
     except:
         pass
 
-    #NEEDS WORK
-    genres = item.genres
-    if genres != None:
-        numWhereQueries += 1
-        if(numWhereQueries - 1 != numAnds):
-            whereQuery += " AND "
-            numAnds += 1
-        genresQuery = "("
-        for genre in genres:
-            genresQuery += f"g.genre = '{genre}'"
-            genresQuery += " OR "
-        genresQuery = genresQuery[:-4]
-        whereQuery += genresQuery + ") "
-
-    #NEEDS WORK
-    workedwith = item.workedwithids
-    if workedwith != None:
-        numWhereQueries += 1
-        if(numWhereQueries - 1 != numAnds):
-            whereQuery += " AND "
-            numAnds += 1
-        wwQuery = "("
-        for ww in workedwith:
-            wwQuery += f"r.movieId = ('{ww}')"
-            wwQuery += " OR "
-        wwQuery = wwQuery[:-4]
-        whereQuery += wwQuery + ") "
-
     professions = item.professions
     if professions != None:
         numWhereQueries += 1
@@ -554,17 +537,56 @@ def getPeople(item:Person):
         if(numWhereQueries - 1 != numAnds):
             whereQuery += " AND "
             numAnds += 1
-        movieQuery = f"(r.movieId = '{movie}' OR d.movieId = '{movie}') "
+        dupWhereQuery = whereQuery
+        movieQuery = f"(r.movieId = '{movie}') "
+        movie2Query = f"(d.movieId = '{movie}') "
         whereQuery += movieQuery
+        dupWhereQuery += movie2Query
 
+    genres = item.genres
+    if genres != None:
+        numWhereQueries += 1
+        if(numWhereQueries - 1 != numAnds):
+            whereQuery += " AND "
+            numAnds += 1
+        genresQuery = "("
+        for genre in genres:
+            genresQuery += f"g.genre = '{genre}'"
+            genresQuery += " OR "
+        genresQuery = genresQuery[:-4]
+        whereQuery += genresQuery + ") "
+        dupWhereQuery = whereQuery
+
+    workedwith = item.workedwithids
+    if workedwith != None:
+        numWhereQueries += 1
+        if(numWhereQueries - 1 != numAnds):
+            whereQuery += " AND "
+            numAnds += 1
+        dupWhereQuery = whereQuery
+        wwQuery = "("
+        ww2Query = "("
+        for ww in workedwith:
+            wwQuery += f"r.movieId IN (SELECT b.movieId FROM role b WHERE b.actorId = '{ww}')"
+            wwQuery += " OR "
+            ww2Query += f"d.movieId IN (SELECT b.movieId FROM directors b WHERE b.directorId = '{ww}')"
+            ww2Query += " OR "
+        wwQuery = wwQuery[:-4]
+        whereQuery += wwQuery + ") "
+        ww2Query = ww2Query[:-4]
+        dupWhereQuery += ww2Query + ") "
 
     if whereQuery == "WHERE ":
         whereQuery = ""
-    sql += whereQuery + groupby + orderbysql + limit
+    
+    if(dupWhereQuery == ""):
+        sql += rolesql + whereQuery + groupby + orderbysql + limit
+    else:
+        sql += rolesql + whereQuery + groupby + orderbysql + " UNION " + dirsql + dupWhereQuery + groupby + orderbysql + limit 
 
     result = mysqlCnx.query('imdb',sql,'select')
     jsonResult = jsonable_encoder(result)
     return JSONResponse(content = jsonResult)
 
-#if __name__ == "__main__":
-    #uvicorn.run(app, host="0.0.0.0", port=8002, log_level="info")
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8002, log_level="info")
