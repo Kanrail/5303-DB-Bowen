@@ -1,6 +1,6 @@
 # Assignment 6 - Restaurants Database (http://143.198.60.31:8003/)
 
-##Description
+## Description
 #### API covers a large swathe of restaurants in the greater New York area and some beyond.
 
 ### Project Files
