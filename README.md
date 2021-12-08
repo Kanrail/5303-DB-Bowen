@@ -3,3 +3,5 @@
 ## Email: daniel.lawrence.bowen@gmail.com
 ## Website: http://143.198.60.31
 ### Assignment4: http://143.198.60.31:8001/
+### Assignment5: http://143.198.60.31:8002/
+### Assignment6: http://143.198.60.31:8003/
