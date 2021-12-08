@@ -15,7 +15,18 @@
 |   1   | mysqlCnx.py     | Holds the MySQL database connection strings, includes, and methods.      |
 |   1   | output.csv      | A CSV output of the run of main.py that can then be used to create graphs|
 
-
-
 ## Experiment Results
-### Inserts
+### Brief
+The goal of the experiment is to compare the relative computation time in direct comparison under similar circumstances for three database solutions; MongoDB, Redis and MySQL. 
+### Methods
+Each database was compared on four operations (inserts, searches, updates, and deletes) as well as with three different data types (strings, integers, and complex data structures). Within each search comparison, they were compared on single searches, multiple value searches, and entire database queries.
+### Setup
+The program was written in python and interfaced with each database using an acquired python library. The program was ran on a Apple M1 Macbook Air.
+### Results
+The results were surprising with MySQL and Redis far out performing MongoDB in every category. At 5000 items, in nearly every category, Redis and MySQL were sub five seconds for completion whereas MongoDB was over 45 seconds. While MySQL came out the clear winner, there were discrepancies with the results from the string search results for MySQL that were inconsistent with other results.
+### Errors
+In comparing the string search method to the other methods, a discrepancy was noticed. A change had been made early on in the process to give each language the best possible scenario for making individual calls. The MySQL calls were all concatenated to one string and passed as a single query. In hindsight, this likely gave MySQL an unfair advantage in computation time as reflected in the string search results.
+
+Also had significant difficulties translating the resulting CSV file to usable charts.
+### Conclusion
+On a subsequent run of this experiment, the methods should definitely be modified to remove the unfair bias that MySQL received in these results. If the string search results are anything to go by, MongoDB still likely is the slowest of the three databases, but Redis would enjoy a comfortable lead over MySQL. Also, given the difficulties in translating the resulting data to usable charts, an inclusion of a graphing library into the program would definitely have been an improvement.
