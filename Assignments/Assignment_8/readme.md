@@ -1,22 +1,19 @@
-# Assignment 6 - Restaurants Database (http://143.198.60.31:8003/)
+# Assignment 8 - Database Performance Comparison Experiment
 
 ## Description
-#### API covers a large swathe of restaurants in the greater New York area and some beyond.
+#### This program compares Mongo, Redis, and MySQL on performance for insertions, searches, updates, and deletions for 3 object types: strings, integers, and complex json objects.
+
+## Instructions
+#### In main.py, at the top of the main function, the variable N denotes the number of values to be used, NOffset denotes the step period between. The when run, it'll start at the lowest offset, then work its way up to one offset below N. (e.g. if you want it to go from 500-5000, N = 5500 and NOffset = 500)
 
 ### Project Files
-|   #   | File            | Description                                          |
-| :---: | --------------- | --------------------------------------------------   |
-|   1   | main.py         | Fastapi py file that holds the movie database routes |
+|   #   | File            | Description                                                              |
+| :---: | --------------- | -------------------------------------------------------------------------|
+|   1   | main.py         | Main file that holds the all of the search calls and file printing       |
+|   1   | myPyMongo.py    | Holds the Mongo database connection strings and includes.                |
+|   1   | myRedis.py      | Holds the Redis database connection strings and includes.                |
+|   1   | mysqlCnx.py     | Holds the MySQL database connection strings, includes, and methods.      |
+|   1   | output.csv      | A CSV output of the run of main.py that can then be used to create graphs|
 
-### API Routes
-
-|   #   | Route                   | Model | Description                                                                   |
-| :---: | ----------------------- | --------- | ----------------------------------------------------------------- |
-|   1   | /restaurants            | Limit     | Returns all restaurants in the database within the limit provided |
-|   2   | /restaurants/categories | Movie     | Returns all restaurant cuisine types                              |
-|   3   | /restaurants/category   | Category  | Returns all restaurants that match a specified cuisine.           |
-|   4   | /restaurants/zipcodes   | Zipcode   | Returns all restaurants within the passed zipcode                 |
-|   5   | /restaurants/minrating  | MinRating | Returns all restaurants with a rating higher than specified       |
-|   6   | /restaurants/near       | Point     | Returns all restaurants within 500 meters of a specified lat/long |
 
 
