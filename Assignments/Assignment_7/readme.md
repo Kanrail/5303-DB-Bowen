@@ -1,7 +1,11 @@
 # Assignment 7 - School Advising (http://143.198.60.31:8004/)
 
 ## Description
-#### API covers a large swathe of restaurants in the greater New York area and some beyond.
+#### API Provides the ability to manage course data, student information, and produce advising forms.
+
+## Future Development
+#### A front-end portal to utilize this API in an easy to use environment.
+#### Refinement on the database to include a new relation for semester and year for each course as dates, times, buildings, and rooms can all change from semester to semester, but would be nice to retain a history of these changes.
 
 ### Project Files
 |   #   | File                     | Description                                                |
